@@ -131,7 +131,7 @@ init(Opts) ->
 
 connect(#state{connect_timeout = ConnectTimeout} = State) ->
     MainPid = self(),
-    Pid = spawn_link(
+    Pid = spawn(
         fun () ->
             {ok, State1}=connect_socket(State),
             case handshake(State1) of
@@ -149,7 +149,6 @@ connect(#state{connect_timeout = ConnectTimeout} = State) ->
         {Pid, {error, _} = E} ->
             E
     after ConnectTimeout ->
-        unlink(Pid),
         exit(Pid, kill),
         {error, timeout}
     end.
